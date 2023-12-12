@@ -10,9 +10,17 @@ const postSchema = new Schema(
       type: String,
       required: [true, "Content is required."],
     },
-    imageUrl: {
-      type: String,
-      required: [true, "Image is required."],
+    image: {
+      type: {
+        imageUrl: {
+          type: String,
+          required: true,
+        },
+        _id: {
+          type: String,
+          required: true,
+        },
+      },
     },
     creator: {
       type: Schema.Types.ObjectId,
