@@ -1,5 +1,5 @@
 const joi = require("joi");
-const errText = require("./error-text.js");
+const validationError = require("./validationError.js");
 
 module.exports = (post) => {
   const postSchema = joi
@@ -9,6 +9,6 @@ module.exports = (post) => {
     })
     .unknown();
   let { value, error } = postSchema.validate(post, { abortEarly: false });
-  if (error) error = errText(error);
+  if (error) error = validationError(error);
   return { value, error };
 };

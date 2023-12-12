@@ -13,11 +13,21 @@ cloudinary.config({
 });
 
 exports.getPosts = asyncHandler(async (req, res, next) => {
-  const posts = await Post.find({});
+  const currentPage = req.query.page || 1;
+  const perPage = 2;
+  const totalItems = await Post.find().countDocuments();
+
+  const posts = await Post.find({})
+    .skip((currentPage - 1) * perPage)
+    .limit(perPage);
+  if (!posts) return next(new appError("Could not find posts.", 422));
+
   return res.status(200).json({
     message: "Fetched posts successfully.",
     posts: posts,
+    totalItems,
   });
+  
 });
 
 exports.createPost = asyncHandler(async (req, res, next) => {
@@ -69,7 +79,7 @@ exports.getPost = asyncHandler(async (req, res, next) => {
 exports.updatePost = asyncHandler(async (req, res, next) => {
   uploadPostImage(req, res, async function (err) {
     if (err) return next(new appError(err, 422));
-    
+
     const { value, error } = validatePost(req.body);
     if (error) {
       return res.status(422).json({
@@ -80,9 +90,8 @@ exports.updatePost = asyncHandler(async (req, res, next) => {
 
     const postId = req.params.postId;
     const post = await Post.findById(postId);
-    if (!post) 
-      return next(new appError("Could not find post."), 422);
-    
+    if (!post) return next(new appError("Could not find post."), 422);
+
     post.title = value.title;
     post.content = value.content;
 
@@ -103,9 +112,8 @@ exports.updatePost = asyncHandler(async (req, res, next) => {
 exports.deletePost = asyncHandler(async (req, res, next) => {
   const postId = req.params.postId;
   const post = await Post.findById(postId);
-  if (!post) 
-    return next(new appError("Could not find post."), 422);
-  
+  if (!post) return next(new appError("Could not find post."), 422);
+
   await cloudinary.uploader.destroy(post.image._id);
   await Post.findByIdAndDelete(postId);
   return res.status(200).json({

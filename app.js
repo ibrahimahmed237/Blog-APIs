@@ -4,6 +4,7 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const feedRoutes = require("./routes/feed.js");
+const authRoutes = require("./routes/auth.js");
 const errorHandler = require("./controllers/error.js");
 const appError = require("./controllers/error.js").appError;
 
@@ -12,6 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cors());
 
+app.use("/auth", authRoutes);
 app.use("/feed", feedRoutes);
 
 app.all("*", (req, res, next) => {
