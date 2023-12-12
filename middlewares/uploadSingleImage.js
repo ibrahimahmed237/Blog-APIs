@@ -1,8 +1,9 @@
 const multer = require("multer");
 const appError = require("../controllers/error.js").appError;
+
 const storage = multer.diskStorage({
   filename: function (req, file, cb) {
-    cb(null,file.originalname);
+    cb(null, file.originalname);
   },
 });
 
@@ -12,6 +13,7 @@ const imageFilter = function (req, file, cb) {
   }
   cb(null, true);
 };
+
 module.exports = multer({
   storage: storage,
   fileFilter: imageFilter,
@@ -19,5 +21,3 @@ module.exports = multer({
     fileSize: 3000000,
   },
 }).single("image");
-
-
