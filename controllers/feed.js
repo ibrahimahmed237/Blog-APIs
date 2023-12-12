@@ -99,3 +99,16 @@ exports.updatePost = asyncHandler(async (req, res, next) => {
     });
   });
 });
+
+exports.deletePost = asyncHandler(async (req, res, next) => {
+  const postId = req.params.postId;
+  const post = await Post.findById(postId);
+  if (!post) 
+    return next(new appError("Could not find post."), 422);
+  
+  await cloudinary.uploader.destroy(post.image._id);
+  await Post.findByIdAndDelete(postId);
+  return res.status(200).json({
+    message: "Post deleted successfully!",
+  });
+});
