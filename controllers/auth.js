@@ -32,7 +32,6 @@ exports.signup = asyncHandler(async (req, res, next) => {
     message: "User created successfully!",
     user,
   });
-  
 });
 
 exports.login = asyncHandler(async (req, res, next) => {
@@ -54,5 +53,44 @@ exports.login = asyncHandler(async (req, res, next) => {
     message: "Logged in successfully!",
     token,
     userId: user._id.toString(),
+  });
+});
+
+exports.logout = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.userId);
+  if (!user) return next(new appError("Please Authenticate.", 422));
+
+  const deletedToken = req.header("Authorization")?.replace("Bearer ", "");
+
+  user.tokens = user.tokens.filter((tokens) => {
+    return tokens.token !== deletedToken;
+  });
+
+  await user.save();
+  res.status(200).send();
+});
+
+exports.getStatus = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.userId);
+  if (!user) return next(new appError("Please Authenticate.", 422));
+
+  return res.status(200).json({
+    message: "Status fetched successfully!",
+    status: user.status,
+  });
+});
+
+exports.updateStatus = asyncHandler(async (req, res, next) => {
+  let status = req.body.status;
+  status = status.trim();
+  if (!status) return next(new appError("Status cannot be empty!", 422));
+
+  const user = await User.findById(req.userId);
+  if (!user) return next(new appError("Please Authenticate.", 422));
+  user.status = status;
+
+  await user.save();
+  return res.status(200).json({
+    message: "Status updated successfully!",
   });
 });

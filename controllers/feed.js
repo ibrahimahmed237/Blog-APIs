@@ -3,6 +3,7 @@ const Post = require("../models/Post.js");
 const uploadPostImage = require("../middlewares/uploadSingleImage.js");
 const appError = require("../controllers/error.js").appError;
 const asyncHandler = require("express-async-handler");
+const User = require("../models/User.js");
 
 const cloudinary = require("cloudinary").v2;
 
@@ -27,7 +28,6 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
     posts: posts,
     totalItems,
   });
-  
 });
 
 exports.createPost = asyncHandler(async (req, res, next) => {
@@ -47,18 +47,24 @@ exports.createPost = asyncHandler(async (req, res, next) => {
 
     const image = await cloudinary.uploader.upload(req.file.path);
 
+    const user = await User.findById(req.userId);
+    if (!user) return next(new appError("Please Authenticate.", 422));
+
     const post = new Post({
       title: value.title,
       content: value.content,
       image: { imageUrl: image.secure_url, _id: image.public_id },
-      creator: { name: "Ibrahim", _id: "5f8b0b7b9b0b3e1e3c9e1e1e" },
+      creator: req.userId,
     });
 
     await post.save();
+    user.posts.push(post);
+    await user.save();
 
     return res.status(200).json({
       message: "Post created successfully!",
       post,
+      creator: { _id: user._id, name: user.name },
     });
   });
 });
@@ -92,6 +98,10 @@ exports.updatePost = asyncHandler(async (req, res, next) => {
     const post = await Post.findById(postId);
     if (!post) return next(new appError("Could not find post."), 422);
 
+    if (post.creator.toString() !== req.userId) {
+      return next(new appError("Not authorized!", 403));
+    }
+
     post.title = value.title;
     post.content = value.content;
 
@@ -114,9 +124,19 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
   const post = await Post.findById(postId);
   if (!post) return next(new appError("Could not find post."), 422);
 
+  if (post.creator.toString() !== req.userId) {
+    return next(new appError("Not authorized!", 403));
+  }
+  const user = await User.findById(req.userId);
+
+  if (!user) return next(new appError("Please Authenticate.", 422));
+  user.posts.pull(postId);
+  await user.save();
+
   await cloudinary.uploader.destroy(post.image._id);
   await Post.findByIdAndDelete(postId);
   return res.status(200).json({
     message: "Post deleted successfully!",
   });
 });
+
