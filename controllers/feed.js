@@ -31,7 +31,7 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
     totalItems,
   });
 });
-//
+
 exports.createPost = asyncHandler(async (req, res, next) => {
   uploadPostImage(req, res, async function (err) {
     if (err) return next(new appError(err, 422));
