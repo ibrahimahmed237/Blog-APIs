@@ -25,6 +25,7 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
     .limit(perPage);
   if (!posts) return next(new appError("Could not find posts.", 422));
 
+
   return res.status(200).json({
     message: "Fetched posts successfully.",
     posts: posts,
