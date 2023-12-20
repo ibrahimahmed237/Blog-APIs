@@ -4,7 +4,7 @@ const uploadPostImage = require("../middlewares/uploadSingleImage.js");
 const appError = require("../controllers/error.js").appError;
 const asyncHandler = require("express-async-handler");
 const User = require("../models/User.js");
-
+const io = require("../socket.js").getIO;
 const cloudinary = require("cloudinary").v2;
 
 cloudinary.config({
@@ -19,6 +19,8 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
   const totalItems = await Post.find().countDocuments();
 
   const posts = await Post.find({})
+    .populate("creator")
+    .sort({ createdAt: -1 })
     .skip((currentPage - 1) * perPage)
     .limit(perPage);
   if (!posts) return next(new appError("Could not find posts.", 422));
@@ -61,6 +63,11 @@ exports.createPost = asyncHandler(async (req, res, next) => {
     user.posts.push(post);
     await user.save();
 
+    io().emit("posts", {
+      action: "create",
+      post: { ...post._doc, creator: { _id: req.userId, name: user.name } },
+    });
+
     return res.status(200).json({
       message: "Post created successfully!",
       post,
@@ -95,10 +102,11 @@ exports.updatePost = asyncHandler(async (req, res, next) => {
     }
 
     const postId = req.params.postId;
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId).populate("creator");
+
     if (!post) return next(new appError("Could not find post."), 422);
 
-    if (post.creator.toString() !== req.userId) {
+    if (post.creator._id.toString() !== req.userId) {
       return next(new appError("Not authorized!", 403));
     }
 
@@ -112,6 +120,7 @@ exports.updatePost = asyncHandler(async (req, res, next) => {
       post.image._id = image.public_id;
     }
     await post.save();
+    io().emit("posts", { action: "update", post: post });
     return res.status(200).json({
       message: "Post updated successfully!",
       post: post,
@@ -121,10 +130,10 @@ exports.updatePost = asyncHandler(async (req, res, next) => {
 
 exports.deletePost = asyncHandler(async (req, res, next) => {
   const postId = req.params.postId;
-  const post = await Post.findById(postId);
+  const post = await Post.findById(postId).populate("creator");
   if (!post) return next(new appError("Could not find post."), 422);
 
-  if (post.creator.toString() !== req.userId) {
+  if (post.creator._id.toString() !== req.userId) {
     return next(new appError("Not authorized!", 403));
   }
   const user = await User.findById(req.userId);
@@ -135,8 +144,8 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
 
   await cloudinary.uploader.destroy(post.image._id);
   await Post.findByIdAndDelete(postId);
+  io().emit("posts", { action: "delete", post: postId });
   return res.status(200).json({
     message: "Post deleted successfully!",
   });
 });
-

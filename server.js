@@ -11,12 +11,16 @@ process.on("uncaughtException", (err) => {
 mongoose
   .connect(process.env.MONGO_URI)
   .then((res) => {
-    app.listen(process.env.PORT || 8080, () => {
+    const server = app.listen(process.env.PORT || 8080, () => {
       console.log(
         `Connected to database and server is running on port ${
           process.env.PORT || 8080
         }.`
       );
+    });
+    const io = require("./socket.js").init(server);
+    io.on("connection", (socket) => {
+      console.log("Client connected.");
     });
   })
   .catch((err) => {
