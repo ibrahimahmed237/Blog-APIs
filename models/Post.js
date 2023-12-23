@@ -30,5 +30,9 @@ const postSchema = new Schema(
   },
   { timestamps: true }
 );
-
+postSchema.methods.toJSON = function () {
+  const obj = this.toObject();
+  delete obj.image._id;
+  return obj;
+};
 module.exports = mongoose.model("Post", postSchema);
