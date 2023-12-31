@@ -1,6 +1,7 @@
 # Blog APIs Application with REST APIs
 
-This Node.js application provides REST APIs for managing blog-related functionalities. It includes features such as user authentication, blog creation, editing, and deletion, image uploads, error handling, and utilizes Express.js as the web framework for enhanced flexibility in data retrieval. Below is a comprehensive guide on installation, usage, configuration, features, dependencies, and contributing.
+This Node.js application provides REST APIs for managing blog-related functionalities and real-time updates using WebSockets and Socket.IO. It includes features such as user authentication, blog creation, editing, and deletion, image uploads, error handling, and utilizes Express.js as the web framework for enhanced flexibility in data retrieval. The real-time updates feature allows users to see new posts and updates to existing posts in real-time without needing to refresh the page. Below is a comprehensive guide on installation, usage, configuration, features, dependencies, and contributing.
+
 
 ## Installation
 
@@ -97,6 +98,10 @@ All routes except `POST /auth/signup` and `POST /auth/login` require authenticat
 - Express.js: For handling server and routes.
 - bcrypt: For hashing passwords and ensuring user security.
 - mongoose: For modeling and managing application data.
+- jsonwebtoken: For handling JWT-based user authentication.
+- multer: For handling file uploads.
+- cloudinary: For image management and storage.
+- socket.io: For real-time communication using WebSockets.
 - Other dependencies...
 
 ## Contributing
