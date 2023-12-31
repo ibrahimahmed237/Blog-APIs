@@ -67,6 +67,9 @@ All routes except `POST /auth/signup` and `POST /auth/login` require authenticat
 - Blog Management:
     - Users can create, edit, and delete blog posts.
     - Thorough validation ensures data integrity.
+- Real-time Updates:
+    - Utilizes WebSockets and Socket.IO to provide real-time updates to the feed.
+    - Users can see new posts and updates to existing posts in real-time without needing to refresh the page.
 - Image Handling:
     - Support for uploading images associated with blog posts.
     - Utilizes a suitable image processing library.
@@ -86,6 +89,7 @@ All routes except `POST /auth/signup` and `POST /auth/login` require authenticat
 - Developed using Express.js as the web framework.
 - MongoDB for data storage.
 - Utilizes REST APIs for enhanced API interactions.
+- Real-time communication: Implemented using WebSockets and Socket.IO for real-time updates to the feed.
 - Other dependencies...
 
 ## Dependencies
