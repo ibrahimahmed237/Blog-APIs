@@ -67,7 +67,9 @@ exports.logout = asyncHandler(async (req, res, next) => {
   });
 
   await user.save();
-  res.status(200).send();
+  return res.status(200).send({
+    message: "Logged out successfully!",
+  });
 });
 
 exports.getStatus = asyncHandler(async (req, res, next) => {
