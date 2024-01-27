@@ -12,7 +12,7 @@ router.post("/login", authController.login);
 router.post("/logout", isAuth, authController.logout);
 
 //GET /auth/status
-router.get("/status", isAuth, authController.getStatus);
+router.get("/status", isAuth, authController.getUserStatus);
 
 //PUT /auth/status
 router.put("/status", isAuth, authController.updateStatus);

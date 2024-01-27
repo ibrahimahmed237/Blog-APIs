@@ -72,7 +72,7 @@ exports.logout = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.getStatus = asyncHandler(async (req, res, next) => {
+exports.getUserStatus = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.userId);
   if (!user) return next(new appError("Please Authenticate.", 422));
 
