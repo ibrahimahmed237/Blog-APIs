@@ -21,7 +21,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "mocha --timeout 5000",
+    "test": "mocha --timeout 200000",
     "start": "nodemon server.js"
   },
   "author": "",

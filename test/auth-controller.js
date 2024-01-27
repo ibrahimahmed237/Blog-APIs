@@ -66,16 +66,13 @@ describe("Auth Controller", async function () {
   });
 
   it("should return a response with a valid user status for an existing user", async function () {
-    try {
-      const response = await chai
-        .request(app)
-        .get("/auth/status")
-        .set("Authorization", `Bearer ${token}`);
+    const response = await chai
+      .request(app)
+      .get("/auth/status")
+      .set("Authorization", `Bearer ${token}`);
 
-      expect(response).to.have.status(200);
-    } catch (err) {
-      console.log(err);
-    }
+    expect(response).to.have.status(200);
+    expect(response.body).to.have.property("status", "I am new!");
   });
 
   after(async function () {
