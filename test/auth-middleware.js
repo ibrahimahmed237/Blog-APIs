@@ -16,7 +16,6 @@ describe("Auth Middleware", function () {
 
     // Create the stubs and spy
     findOneStub = sinon.stub(User, "findOne").returns({ _id: userId });
-    verifyStub = sinon.stub(jwt, "verify").returns({ userId });
     nextSpy = sinon.spy();
   });
 
@@ -27,6 +26,8 @@ describe("Auth Middleware", function () {
   });
 
   it("should yield userId after decoding the token", async function () {
+    verifyStub = sinon.stub(jwt, "verify").returns({ userId });
+
     const req = {
       header: function () {
         return "Bearer validtoken";
@@ -59,8 +60,7 @@ describe("Auth Middleware", function () {
   });
 
   it("should throw an error if the authorization header is only one string", async function () {
-    verifyStub.restore();
-    
+
     const req = {
       header: function () {
         return "invalidtoken";

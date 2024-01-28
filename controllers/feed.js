@@ -63,10 +63,10 @@ exports.createPost = asyncHandler(async (req, res, next) => {
     user.posts.push(post);
     await user.save();
 
-    io().emit("posts", {
-      action: "create",
-      post: { ...post._doc, creator: { _id: req.userId, name: user.name } },
-    });
+    // io().emit("posts", {
+    //   action: "create",
+    //   post: { ...post._doc, creator: { _id: req.userId, name: user.name } },
+    // });
 
     return res.status(200).json({
       message: "Post created successfully!",
@@ -120,11 +120,11 @@ exports.updatePost = asyncHandler(async (req, res, next) => {
       post.image._id = image.public_id;
     }
     await post.save();
-    io().emit("posts", { action: "update", post: post });
-    return res.status(200).json({
-      message: "Post updated successfully!",
-      post: post,
-    });
+    // io().emit("posts", { action: "update", post: post });
+    // return res.status(200).json({
+    //   message: "Post updated successfully!",
+    //   post: post,
+    // });
   });
 });
 
@@ -144,8 +144,8 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
 
   await cloudinary.uploader.destroy(post.image._id);
   await Post.findByIdAndDelete(postId);
-  io().emit("posts", { action: "delete", post: postId });
-  return res.status(200).json({
-    message: "Post deleted successfully!",
-  });
+  // io().emit("posts", { action: "delete", post: postId });
+  // return res.status(200).json({
+  //   message: "Post deleted successfully!",
+  // });
 });
