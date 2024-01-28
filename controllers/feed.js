@@ -121,10 +121,10 @@ exports.updatePost = asyncHandler(async (req, res, next) => {
     }
     await post.save();
     // io().emit("posts", { action: "update", post: post });
-    // return res.status(200).json({
-    //   message: "Post updated successfully!",
-    //   post: post,
-    // });
+    return res.status(200).json({
+      message: "Post updated successfully!",
+      post: post,
+    });
   });
 });
 
@@ -145,7 +145,7 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
   await cloudinary.uploader.destroy(post.image._id);
   await Post.findByIdAndDelete(postId);
   // io().emit("posts", { action: "delete", post: postId });
-  // return res.status(200).json({
-  //   message: "Post deleted successfully!",
-  // });
+  return res.status(200).json({
+    message: "Post deleted successfully!",
+  });
 });
